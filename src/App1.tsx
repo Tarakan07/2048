@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "./App.css";
 
 type TState = {
@@ -8,6 +8,7 @@ type TState = {
 	message: string | null;
 };
 const App = () => {
+	const [initProject, setInitProject] = useState(false);
 	const [state, setState] = useState<TState>({
 		board: null,
 		score: 0,
@@ -23,33 +24,43 @@ const App = () => {
 	// 	// }
 	// }, []);
 	useEffect(() => {
-		console.log("asdasdsad");
-		window.addEventListener("keydown", handleKeyDown);
 		initBoard();
-		return () => {
-			window.removeEventListener("keydown", handleKeyDown);
-		};
+		setInitProject(true);
 	}, []);
+
+	useEffect(() => {
+		if (initProject && state.board) {
+			setInitProject(false);
+		}
+		window.addEventListener("keydown", (e) => {
+			handleKeyDown(e);
+		});
+		// return () => {
+		// 	console.log("removeee");
+		// 	window.removeEventListener("keydown", handleKeyDown);
+		// };
+	}, [state, initProject]);
+
 	const handleKeyDown = (e: any) => {
-		console.log(e.keyCode);
 		const up = 38;
 		const right = 39;
 		const down = 40;
 		const left = 37;
 		const n = 78;
-		console.log(e.keyCode);
-		// if (e.keyCode === up) {
-		// 	move("up");
-		// } else if (e.keyCode === right) {
-		// 	move("right");
-		// } else if (e.keyCode === down) {
-		// 	move("down");
-		// } else if (e.keyCode === left) {
-		// 	move("left");
-		// } else if (e.keyCode === n) {
-		// 	initBoard();
-		// }
+
+		if (e.keyCode === up) {
+			move("up");
+		} else if (e.keyCode === right) {
+			move("right");
+		} else if (e.keyCode === down) {
+			move("down");
+		} else if (e.keyCode === left) {
+			move("left");
+		} else if (e.keyCode === n) {
+			initBoard();
+		}
 	};
+
 	const initBoard = () => {
 		let board = [
 			[0, 0, 0, 0],
@@ -72,97 +83,101 @@ const App = () => {
 	const boardMoved = (original: any, updated: any) => {
 		return JSON.stringify(updated) !== JSON.stringify(original) ? true : false;
 	};
+
 	// Moves board depending on direction and checks for game over
-	const move = (direction: any) => {
-		if (!state.gameOver) {
-			if (direction === "up") {
-				const movedUp = moveUp(state.board);
-				if (boardMoved(state.board, movedUp.board)) {
-					const upWithRandom = placeRandom(movedUp.board);
+	const move = useCallback(
+		(direction: any) => {
+			if (!state.gameOver) {
+				if (direction === "up") {
+					const movedUp = moveUp(state.board);
+					if (boardMoved(state.board, movedUp.board)) {
+						const upWithRandom = placeRandom(movedUp.board);
 
-					if (checkForGameOver(upWithRandom)) {
-						setState((prev) => ({
-							...prev,
-							board: upWithRandom,
-							gameOver: true,
-							message: "Game over!",
-						}));
-					} else {
-						setState((prev) => ({
-							...prev,
-							board: upWithRandom,
-							score: (prev.score += movedUp.score),
-						}));
+						if (checkForGameOver(upWithRandom)) {
+							setState((prev) => ({
+								...prev,
+								board: upWithRandom,
+								gameOver: true,
+								message: "Game over!",
+							}));
+						} else {
+							setState((prev) => ({
+								...prev,
+								board: upWithRandom,
+								score: (prev.score += movedUp.score),
+							}));
+						}
+					}
+				} else if (direction === "right") {
+					const movedRight = moveRight(state.board);
+					if (boardMoved(state.board, movedRight.board)) {
+						const rightWithRandom = placeRandom(movedRight.board);
+
+						if (checkForGameOver(rightWithRandom)) {
+							setState((prev) => ({
+								...prev,
+								board: rightWithRandom,
+								gameOver: true,
+								message: "Game over!",
+							}));
+						} else {
+							setState((prev) => ({
+								...prev,
+								board: rightWithRandom,
+								score: (prev.score += movedRight.score),
+							}));
+						}
+					}
+				} else if (direction === "down") {
+					const movedDown = moveDown(state.board);
+					if (boardMoved(state.board, movedDown.board)) {
+						const downWithRandom = placeRandom(movedDown.board);
+
+						if (checkForGameOver(downWithRandom)) {
+							setState((prev) => ({
+								...prev,
+								board: downWithRandom,
+								gameOver: true,
+								message: "Game over!",
+							}));
+						} else {
+							setState((prev) => ({
+								...prev,
+								board: downWithRandom,
+								score: (prev.score += movedDown.score),
+							}));
+						}
+					}
+				} else if (direction === "left") {
+					const movedLeft = moveLeft(state.board);
+					if (boardMoved(state.board, movedLeft.board)) {
+						const leftWithRandom = placeRandom(movedLeft.board);
+
+						if (checkForGameOver(leftWithRandom)) {
+							setState((prev) => ({
+								...prev,
+								board: leftWithRandom,
+								gameOver: true,
+								message: "Game over!",
+							}));
+						} else {
+							setState((prev) => ({
+								...prev,
+								board: leftWithRandom,
+								score: (prev.score += movedLeft.score),
+							}));
+						}
 					}
 				}
-			} else if (direction === "right") {
-				const movedRight = moveRight(state.board);
-				if (boardMoved(state.board, movedRight.board)) {
-					const rightWithRandom = placeRandom(movedRight.board);
-
-					if (checkForGameOver(rightWithRandom)) {
-						setState((prev) => ({
-							...prev,
-							board: rightWithRandom,
-							gameOver: true,
-							message: "Game over!",
-						}));
-					} else {
-						setState((prev) => ({
-							...prev,
-							board: rightWithRandom,
-							score: (prev.score += movedRight.score),
-						}));
-					}
-				}
-			} else if (direction === "down") {
-				const movedDown = moveDown(state.board);
-				if (boardMoved(state.board, movedDown.board)) {
-					const downWithRandom = placeRandom(movedDown.board);
-
-					if (checkForGameOver(downWithRandom)) {
-						setState((prev) => ({
-							...prev,
-							board: downWithRandom,
-							gameOver: true,
-							message: "Game over!",
-						}));
-					} else {
-						setState((prev) => ({
-							...prev,
-							board: downWithRandom,
-							score: (prev.score += movedDown.score),
-						}));
-					}
-				}
-			} else if (direction === "left") {
-				const movedLeft = moveLeft(state.board);
-				if (boardMoved(state.board, movedLeft.board)) {
-					const leftWithRandom = placeRandom(movedLeft.board);
-
-					if (checkForGameOver(leftWithRandom)) {
-						setState((prev) => ({
-							...prev,
-							board: leftWithRandom,
-							gameOver: true,
-							message: "Game over!",
-						}));
-					} else {
-						setState((prev) => ({
-							...prev,
-							board: leftWithRandom,
-							score: (prev.score += movedLeft.score),
-						}));
-					}
-				}
+			} else {
+				setState((prev) => ({
+					...prev,
+					message: "Game over. Please start a new game.",
+				}));
 			}
-		} else {
-			setState((prev) => ({
-				...prev,
-				message: "Game over. Please start a new game.",
-			}));
-		}
-	};
+		},
+		[state]
+	);
 	// Check to see if there are any moves left
 	const checkForGameOver = (board: any) => {
 		const moves: any = [
@@ -203,10 +218,7 @@ const App = () => {
 
 		return result;
 	};
-
 	const moveUp = (inputBoard: any) => {
-		console.log("inputBoard");
-		console.log(inputBoard);
 		const rotatedRight = rotateRight(inputBoard);
 		let board = [];
 		let score = 0;
