@@ -8,7 +8,6 @@ type TState = {
 	message: string | null;
 };
 const App = () => {
-	const [initProject, setInitProject] = useState(false);
 	const [state, setState] = useState<TState>({
 		board: null,
 		score: 0,
@@ -16,50 +15,30 @@ const App = () => {
 		message: null,
 	});
 
-	// useEffect(() => {
-	// 	initBoard();
-	// 	// const body = document.querySelector("body");
-	// 	// if (refDiv && refDiv.current) {
-	// 	// 	refDiv.current.addEventListener("keydown", handleKeyDown);
-	// 	// }
-	// }, []);
 	useEffect(() => {
+		// window.addEventListener("keydown", handleKeyDown);
 		initBoard();
-		setInitProject(true);
 	}, []);
 
-	useEffect(() => {
-		if (initProject && state.board) {
-			setInitProject(false);
-		}
-		window.addEventListener("keydown", (e) => {
-			handleKeyDown(e);
-		});
-		// return () => {
-		// 	console.log("removeee");
-		// 	window.removeEventListener("keydown", handleKeyDown);
-		// };
-	}, [state, initProject]);
+	// const handleKeyDown = (e: any) => {
+	// 	const up = 38;
+	// 	const right = 39;
+	// 	const down = 40;
+	// 	const left = 37;
+	// 	const n = 78;
 
-	const handleKeyDown = (e: any) => {
-		const up = 38;
-		const right = 39;
-		const down = 40;
-		const left = 37;
-		const n = 78;
-
-		if (e.keyCode === up) {
-			move("up");
-		} else if (e.keyCode === right) {
-			move("right");
-		} else if (e.keyCode === down) {
-			move("down");
-		} else if (e.keyCode === left) {
-			move("left");
-		} else if (e.keyCode === n) {
-			initBoard();
-		}
-	};
+	// 	if (e.keyCode === up) {
+	// 		move("up");
+	// 	} else if (e.keyCode === right) {
+	// 		move("right");
+	// 	} else if (e.keyCode === down) {
+	// 		move("down");
+	// 	} else if (e.keyCode === left) {
+	// 		move("left");
+	// 	} else if (e.keyCode === n) {
+	// 		initBoard();
+	// 	}
+	// };
 
 	const initBoard = () => {
 		let board = [
